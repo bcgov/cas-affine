@@ -21,8 +21,8 @@ spec:
     spec:
       initContainers:
         - name: {{ template "cas-whiteboard.fullname" . }}-affine-migration
-          image: ghcr.io/bcgov/cas-whiteboard:latest
-          imagePullPolicy: Always
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
             - name: AFFINE_INDEXER_ENABLED
               value: "false"
@@ -47,8 +47,8 @@ spec:
               name: {{ include "cas-whiteboard.fullname" . }}-config
       containers:
         - name: {{ template "cas-whiteboard.fullname" . }}-affine-server
-          image: ghcr.io/bcgov/cas-whiteboard:latest
-          imagePullPolicy: Always
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
             - name: AFFINE_INDEXER_ENABLED
               value: "false"
