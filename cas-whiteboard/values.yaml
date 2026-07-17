@@ -1,0 +1,24 @@
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+cas-pg:
+  postgresCluster:
+    storageSize: 5Gi
+    postgres:
+      replicaCount: 1 
+    pgbouncer:
+      replicaCount: 1
+    users:
+      - name: postgres
+        databases:
+          - affine
+      - name: affine
+        databases:
+          - affine
+        options: "CREATEROLE"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3010
+
+route:
+  host: "cas-whiteboard.apps.silver.devops.gov.bc.ca"

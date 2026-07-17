@@ -1,0 +1,19 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-internal-instance
+  labels: {{ include "cas-whiteboard.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ include "cas-whiteboard.name" . }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ include "cas-whiteboard.name" . }}
+        - podSelector:
+            matchLabels:
+              release: {{ include "cas-whiteboard.name" . }}
+  policyTypes:
+    - Ingress

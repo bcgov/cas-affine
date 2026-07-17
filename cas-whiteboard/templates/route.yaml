@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}
+  labels:
+{{ include "cas-whiteboard.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+
+spec:
+  host: {{ .Values.route.host }}
+  port:
+    targetPort: {{ include "cas-whiteboard.fullname" . }}-port
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name:  {{ include "cas-whiteboard.fullname" . }}
+    weight: 100

@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  AFFINE_REVISION: stable
+  CONFIG_LOCATION: /.affine/config
+  PORT: "3010"
+  UPLOAD_LOCATION: /.affine/storage
+kind: ConfigMap
+metadata:
+  name: {{ template "cas-whiteboard.fullname" . }}-env

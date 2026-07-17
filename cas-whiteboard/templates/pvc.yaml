@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-storage
+  labels:
+{{ include "cas-whiteboard.labels" . | indent 4 }}
+spec:
+  storageClassName: netapp-file-standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-config
+  labels:
+{{ include "cas-whiteboard.labels" . | indent 4 }}
+spec:
+  storageClassName: netapp-file-standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-redis
+  labels:
+{{ include "cas-whiteboard.labels" . | indent 4 }}
+spec:
+  storageClassName: netapp-block-standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+      

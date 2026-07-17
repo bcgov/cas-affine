@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-redis
+  labels:
+{{ include "cas-whiteboard.labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{- include "cas-whiteboard.selectorLabels" . | nindent 6 }}
+      component: redis
+  template:
+    metadata:
+      labels:
+{{- include "cas-whiteboard.selectorLabels" . | nindent 8 }}
+        component: redis
+    spec:
+      containers:
+        - image: redis
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - --raw
+                - incr
+                - ping
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: cas-whiteboard-redis
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "cas-whiteboard.fullname" . }}-redis
+      restartPolicy: Always
+      volumes:
+        - name: {{ include "cas-whiteboard.fullname" . }}-redis
+          persistentVolumeClaim:
+            claimName: {{ include "cas-whiteboard.fullname" . }}-redis

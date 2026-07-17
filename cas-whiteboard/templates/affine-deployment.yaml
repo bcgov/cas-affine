@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-whiteboard.fullname" . }}-affine
+  labels:
+    component: affine
+{{- include "cas-whiteboard.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "cas-whiteboard.selectorLabels" . | nindent 6 }}
+      component: affine
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-whiteboard.selectorLabels" . | nindent 8 }}
+        component: affine
+    spec:
+      initContainers:
+        - name: {{ template "cas-whiteboard.fullname" . }}-affine-migration
+          image: ghcr.io/bcgov/cas-whiteboard:latest
+          imagePullPolicy: Always
+          env:
+            - name: AFFINE_INDEXER_ENABLED
+              value: "false"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cas-whiteboard-cas-pg-pguser-postgres
+                  key: uri
+            - name: REDIS_SERVER_HOST
+              value: cas-whiteboard-redis.09269b-tools.svc.cluster.local
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-whiteboard.fullname" . }}-env
+          args:
+            - sh
+            - -c
+            - node ./scripts/self-host-predeploy.js
+          volumeMounts:
+            - mountPath: /home/affine/.affine/storage
+              name: {{ include "cas-whiteboard.fullname" . }}-storage
+            - mountPath: /home/affine/.affine/config
+              name: {{ include "cas-whiteboard.fullname" . }}-config
+      containers:
+        - name: {{ template "cas-whiteboard.fullname" . }}-affine-server
+          image: ghcr.io/bcgov/cas-whiteboard:latest
+          imagePullPolicy: Always
+          env:
+            - name: AFFINE_INDEXER_ENABLED
+              value: "false"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cas-whiteboard-cas-pg-pguser-postgres
+                  key: uri
+            - name: REDIS_SERVER_HOST
+              value: cas-whiteboard-redis.09269b-tools.svc.cluster.local
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-whiteboard.fullname" . }}-env
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          volumeMounts:
+            - mountPath: /home/affine/.affine/storage
+              name: {{ include "cas-whiteboard.fullname" . }}-storage
+            - mountPath: /home/affine/.affine/config
+              name: {{ include "cas-whiteboard.fullname" . }}-config
+      restartPolicy: Always
+      volumes:
+        - name: {{ include "cas-whiteboard.fullname" . }}-storage
+          persistentVolumeClaim:
+            claimName: {{ include "cas-whiteboard.fullname" . }}-storage
+        - name: {{ include "cas-whiteboard.fullname" . }}-config
+          persistentVolumeClaim:
+            claimName: {{ include "cas-whiteboard.fullname" . }}-config
