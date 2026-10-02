@@ -1,4 +1,4 @@
-FROM ghcr.io/toeverything/affine:stable
+FROM ghcr.io/toeverything/affine:0.27.4
 
 # match your host user if you want; 1000:1000 is the usual default
 ARG APP_UID=1001630000

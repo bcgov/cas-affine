@@ -1,5 +1,4 @@
-
-image: ghcr.io/bcgov/cas-whiteboard:latest
+image: ghcr.io/bcgov/cas-whiteboard:0.27.4
 imagePullPolicy: Always
 
 # Postgres Operator setup
@@ -7,7 +6,7 @@ cas-pg:
   postgresCluster:
     storageSize: 5Gi
     postgres:
-      replicaCount: 1 
+      replicaCount: 1
     pgbouncer:
       replicaCount: 1
     users:
